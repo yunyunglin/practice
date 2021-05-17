@@ -31,7 +31,7 @@ public class DeptDAOImpl implements DeptDAO {
     @Override
     public void insert(DeptDO deptDO) {
 
-        Connection con = null;
+    	Connection con = null;
         PreparedStatement pstmt = null;
 
         try {
@@ -131,23 +131,23 @@ public class DeptDAOImpl implements DeptDAO {
             Class.forName(driver);
             con = DriverManager.getConnection(url, userid, passwd);
 
-            // 1.閮剖� pstm.executeUpdate()銋��
+         // 1.設定於 pstm.executeUpdate()之前
             con.setAutoCommit(false);
 
-            // ����撌�
+            // 先刪除員工
             pstmt = con.prepareStatement(DELETE_EMPs);
             pstmt.setInt(1, deptno);
             updateCount_EMPs = pstmt.executeUpdate();
-            // ������
+            // 再刪除部門
             pstmt = con.prepareStatement(DELETE_DEPT);
             pstmt.setInt(1, deptno);
             pstmt.executeUpdate();
 
-            // 2.閮剖� pstm.executeUpdate()銋��
+            // 2.設定於 pstm.executeUpdate()之後
             con.commit();
             con.setAutoCommit(true);
-            System.out.println("�����蝺刻��" + deptno + "���,���撌�" + updateCount_EMPs
-                    + "鈭箏��◤��");
+            System.out.println("刪除部門編號" + deptno + "時,共有員工" + updateCount_EMPs
+                    + "人同時被刪除");
 
             // Handle any driver errors
         } catch (ClassNotFoundException e) {
