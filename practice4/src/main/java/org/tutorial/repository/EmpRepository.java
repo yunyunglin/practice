@@ -6,4 +6,6 @@ import org.tutorial.model.EmpDO;
 
 @Repository	//參數是寫甚麼?
 public interface EmpRepository extends JpaRepository<EmpDO, Integer>{
+	
+	EmpDO findByEmpno(Integer empno);
 }

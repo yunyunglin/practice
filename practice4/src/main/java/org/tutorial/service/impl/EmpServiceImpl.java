@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tutorial.model.EmpDO;
@@ -46,5 +48,17 @@ public class EmpServiceImpl implements EmpService{
 	public List<EmpDO> getAll() {
 		return empRepository.findAll();
 	}
+
+	@Override
+	public Page<EmpDO> getPagedEmp(Pageable pageable) {
+		return empRepository.findAll(pageable);
+	}
+
+	@Override
+	public EmpDO findByEmpno(Integer empno) {
+		return empRepository.findByEmpno(empno);
+	}
+	
+	
 
 }

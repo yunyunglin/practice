@@ -3,9 +3,6 @@ server:
   servlet:
     context-path: /practice4
 spring:
-#  mvc:
-#    view:#      prefix: /templates/
-#      suffix: .html
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     platform: org.hibernate.dialect.MySQLDialect

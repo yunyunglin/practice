@@ -44,7 +44,7 @@
             <tr>
                 <td>部門:<font color=red><b>*</b></font></td>
                 <td>
-                    <select size="1" name="deptno" th:field="*{deptno}">
+                    <select size="1" name="deptno" th:field="*{deptDO.deptno}">
                         <option th:each="deptDO:${deptDOs}"
                                 th:value="${deptDO.deptno}"
                                 th:text="${deptDO.dname}">

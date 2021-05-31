@@ -16,7 +16,7 @@
             <th>查詢部門員工</th>
         </tr>
 
-        <tr th:each="deptDO:${deptDOS}" align='center' valign='middle'>
+        <tr th:each="deptDO:${deptDOs}" align='center' valign='middle'>
             <td th:text="${deptDO.deptno}"></td>
             <td th:text="${deptDO.dname}"></td>
             <td th:text="${deptDO.loc}"></td>

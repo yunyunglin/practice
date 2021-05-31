@@ -7,6 +7,9 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.tutorial.model.DeptDO;
 import org.tutorial.model.EmpDO;
 import org.tutorial.service.DeptService;
@@ -31,13 +35,8 @@ public class EmpController {
 	@RequestMapping(method = RequestMethod.GET, value = "/emp/add")
 	public String addEmpPage(Model model) {
 		
+		//	要先給empDO，如果需要預設值就set屬性
 		EmpDO empDO = new EmpDO();			
-		//	要先給empDO以及預設值
-		empDO.setEname("王小明");
-        empDO.setJob("manager");
-        empDO.setHiredate(LocalDate.parse("2020-04-01"));
-        empDO.setSal(10000.0);
-        empDO.setComm(100.0);
 		model.addAttribute("empDO", empDO);
 		setDeptDOsRequestAttribute(model);	//方法內有在model.addAttribute(DeptDOs)
 		return "emp/add";
@@ -57,8 +56,8 @@ public class EmpController {
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/emp/getOne_For_Update")
 	//	RequestParam括弧對應的是DO屬性，後面參數對應方法內使用名稱
-	public String getOneUpdatePage(@RequestParam("empno") Integer empno1, Model model) {	
-		Optional<EmpDO> optional = empSvc.getOneEmp(empno1);
+	public String getOneUpdatePage(@RequestParam("empno") Integer empno, Model model) {	
+		Optional<EmpDO> optional = empSvc.getOneEmp(empno);
 		if(optional.isPresent()) {
 			EmpDO empDO = optional.get();	//optional需要在get才會拿出原本的型別
 			model.addAttribute("empDO", empDO);
@@ -83,27 +82,35 @@ public class EmpController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/emp/getOne_For_Display")
 	public String listOneEmp(@RequestParam Integer empno, Model model) {
-		Optional<EmpDO> optional = empSvc.getOneEmp(empno);
-		if(optional.isPresent()) {
-			EmpDO empDO = optional.get();
-			model.addAttribute("empDO", empDO);
-		}
+		//寫法一
+//		Optional<EmpDO> optional = empSvc.getOneEmp(empno);
+//		if(optional.isPresent()) {
+//			EmpDO empDO = optional.get();
+//			model.addAttribute("empDO", empDO);
+//		}
+		//寫法二
+		EmpDO empDO = empSvc.findByEmpno(empno);
+		model.addAttribute("empDO", empDO);
 		return "emp/listOne";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/emp/listAllEmp")
-	public String listEmp(Model model) {
-		setEmpDOsRequestAttribute(model);
+	@RequestMapping(method = RequestMethod.GET, value = "/emp/listAll")
+	public String listEmp(Model model, 
+			@RequestParam(value = "pageNum", defaultValue = "0")Integer page,
+			@RequestParam(value = "pageSize", defaultValue = "5")Integer size) {
+		Page<EmpDO> pageResult = empSvc.getPagedEmp(
+                PageRequest.of(page,  // 查詢的頁數，從0起算
+                               size,  // 查詢的每頁筆數
+                               Sort.by("empno").descending()));
+		//取得當前頁面位址
+		String requestUri = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
+		model.addAttribute("requestUri", requestUri);
+		model.addAttribute("page", pageResult);
 		return "emp/listAll";
 	}
 	
-	
-	
-	
-	
 	private void setEmpDOsRequestAttribute(Model model) {
         List<EmpDO> empDOs = empSvc.getAll();
-        System.out.println(empDOs.get(0).getEname());
         model.addAttribute("empDOs", empDOs);
     }
 	
